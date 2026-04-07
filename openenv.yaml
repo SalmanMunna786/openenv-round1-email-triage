@@ -1,0 +1,16 @@
+name: openenv-email-triage
+version: 0.1.0
+description: Real-world email triage environment for customer support operations.
+entrypoint: openenv_email_triage.environment:EmailTriageEnv
+tasks:
+  - id: easy-001
+    difficulty: easy
+  - id: medium-001
+    difficulty: medium
+  - id: hard-001
+    difficulty: hard
+interfaces:
+  - reset
+  - step
+  - state
+
