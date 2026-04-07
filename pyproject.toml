@@ -7,11 +7,11 @@ dependencies = [
     "fastapi",
     "uvicorn",
     "pydantic",
-    "openenv>=0.2.0"
+    "openenv>=0.1.13"
 ]
 
 [project.scripts]
-server = "openenv_email_triage.server:app"
+server = "server.app:main"
 
 [tool.setuptools]
 packages = ["openenv_email_triage"]
