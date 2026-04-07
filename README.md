@@ -1,3 +1,13 @@
+---
+title: openenv-email-triage
+emoji: 🚀
+colorFrom: blue
+colorTo: green
+sdk: docker
+app_file: inference.py
+pinned: false
+---
+
 # OpenEnv Round 1 - Email Triage Environment
 
 This project implements a real-world OpenEnv environment for customer support email triage.
@@ -86,4 +96,3 @@ Endpoints:
 docker build -t openenv-email-triage .
 docker run -p 7860:7860 openenv-email-triage
 ```
-
