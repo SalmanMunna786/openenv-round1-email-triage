@@ -25,6 +25,10 @@ def health() -> dict:
 
 
 @app.post("/reset")
+def reset(req: dict = {}):
+    return env.reset()
+
+#
 def reset(payload: ResetRequest) -> dict:
     obs = env.reset(payload.task_id)
     return {"observation": obs.model_dump(), "state": env.state()}
