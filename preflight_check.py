@@ -32,6 +32,10 @@ def main() -> None:
     _ok("Required files present")
 
     yaml_text = (ROOT / "openenv.yaml").read_text(encoding="utf-8")
+    if "spec_version: 1" not in yaml_text:
+        _fail("openenv.yaml must use Meta manifest spec_version: 1 (see OpenEnv docs)")
+    if "server.app:app" not in yaml_text:
+        _fail("openenv.yaml must set app: server.app:app")
     for task_id in ("easy-001", "medium-001", "hard-001"):
         if task_id not in yaml_text:
             _fail(f"Task missing from openenv.yaml: {task_id}")

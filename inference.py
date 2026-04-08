@@ -170,3 +170,8 @@ if __name__ == "__main__":
         traceback.print_exc()
         sys.exit(1)
 
+
+import os
+if not os.getenv("HF_TOKEN"):
+    raise ValueError("HF_TOKEN is required")
+
