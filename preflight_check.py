@@ -44,6 +44,11 @@ def main() -> None:
             _fail(f"Grader missing in openenv.yaml: {grader}")
     _ok("openenv.yaml contains 3 tasks and 3 graders")
 
+    pyproject_text = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    if "openenv-core[core]>=0.2.2" not in pyproject_text:
+        _fail("pyproject.toml must include openenv-core[core]>=0.2.2")
+    _ok("pyproject.toml contains required OpenEnv core dependency")
+
     env = os.environ.copy()
     env.setdefault("API_BASE_URL", "https://openrouter.ai/api/v1")
     env.setdefault("MODEL_NAME", "openai/gpt-4o-mini")
