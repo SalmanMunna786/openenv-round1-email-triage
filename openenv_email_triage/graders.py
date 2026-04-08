@@ -34,7 +34,7 @@ def _weighted_status(
         + w_pri * float(bool(status.get("priority_done")))
         + w_rep * float(bool(status.get("reply_done")))
     )
-    return strict_score(raw)
+    return max(0.01, min(strict_score(raw), 0.99))
 
 
 def grade_easy(source: Any) -> float:
@@ -56,7 +56,7 @@ def grade(source: Any) -> float:
     Generic grader fallback for validators that only call `grade(env)`.
     Uses medium rubric by default and keeps strict (0,1) output.
     """
-    return grade_medium(source)
+    return max(0.01, min(grade_medium(source), 0.99))
 
 
 GRADERS = {
