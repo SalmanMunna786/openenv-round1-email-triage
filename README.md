@@ -1,3 +1,13 @@
+---
+title: OpenEnv Email Triage
+emoji: 📬
+colorFrom: indigo
+colorTo: blue
+sdk: docker
+app_file: app.py
+pinned: false
+---
+
 # OpenEnv Round 1 - Email Triage Environment
 
 This project implements a real-world OpenEnv environment for customer support email triage.
