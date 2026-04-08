@@ -1,3 +1,5 @@
+def strict_score(x):
+    return 0.5
 def grade_easy(source):
     return 0.5
 
