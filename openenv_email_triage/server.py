@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 from .environment import EmailTriageEnv
 from .models import AgentAction
+from .tasks import TASKS
 
 app = FastAPI(title="OpenEnv Email Triage")
 env = EmailTriageEnv()
@@ -24,11 +25,19 @@ def health() -> dict:
     return {"ok": True}
 
 
-@app.post("/reset")
-def reset(req: dict = {}):
-    return env.reset()
+@app.get("/tasks")
+def tasks() -> list[dict]:
+    return [
+        {
+            "id": task["task_id"],
+            "difficulty": task["difficulty"],
+            "grader": task["grader_id"],
+        }
+        for task in TASKS
+    ]
 
-#
+
+@app.post("/reset")
 def reset(payload: ResetRequest) -> dict:
     obs = env.reset(payload.task_id)
     return {"observation": obs.model_dump(), "state": env.state()}
@@ -48,4 +57,20 @@ def step(action: AgentAction) -> dict:
 @app.get("/state")
 def state() -> dict:
     return env.state()
+
+
+@app.get("/grader")
+def grader() -> dict:
+    current_state = env.state()
+    task_id = current_state.get("task_id")
+    grader_name = None
+    for task in TASKS:
+        if task["task_id"] == task_id:
+            grader_name = task["grader_id"]
+            break
+    return {
+        "task_id": task_id,
+        "grader": grader_name,
+        "score": env.grade_current(),
+    }
 

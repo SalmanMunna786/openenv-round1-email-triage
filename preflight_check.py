@@ -49,6 +49,12 @@ def main() -> None:
         _fail("pyproject.toml must include openenv-core[core]>=0.2.2")
     _ok("pyproject.toml contains required OpenEnv core dependency")
 
+    server_text = (ROOT / "openenv_email_triage" / "server.py").read_text(encoding="utf-8")
+    for endpoint in ('@app.get("/tasks")', '@app.get("/grader")'):
+        if endpoint not in server_text:
+            _fail(f"Missing server endpoint: {endpoint}")
+    _ok("Server exposes tasks and grader endpoints")
+
     env = os.environ.copy()
     env.setdefault("API_BASE_URL", "https://openrouter.ai/api/v1")
     env.setdefault("MODEL_NAME", "openai/gpt-4o-mini")
