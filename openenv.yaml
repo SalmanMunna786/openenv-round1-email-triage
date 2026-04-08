@@ -18,13 +18,13 @@ entrypoint: openenv_email_triage.environment:EmailTriageEnv
 tasks:
   - id: easy-001
     difficulty: easy
-    grader: openenv_email_triage.graders:grade_easy
+    grader: grader_easy
   - id: medium-001
     difficulty: medium
-    grader: openenv_email_triage.graders:grade_medium
+    grader: grader_medium
   - id: hard-001
     difficulty: hard
-    grader: openenv_email_triage.graders:grade_hard
+    grader: grader_hard
 
 interfaces:
   - reset
