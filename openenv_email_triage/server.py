@@ -26,15 +26,9 @@ def health() -> dict:
 
 
 @app.get("/tasks")
-def tasks() -> list[dict]:
-    return [
-        {
-            "id": task["task_id"],
-            "difficulty": task["difficulty"],
-            "grader": task["grader_id"],
-        }
-        for task in TASKS
-    ]
+def tasks() -> list[str]:
+    # Keep response simple for broad validator compatibility.
+    return [task["task_id"] for task in TASKS]
 
 
 @app.post("/reset")
