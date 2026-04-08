@@ -5,10 +5,13 @@ entrypoint: openenv_email_triage.environment:EmailTriageEnv
 tasks:
   - id: easy-001
     difficulty: easy
+    grader: openenv_email_triage.graders:grade_easy
   - id: medium-001
     difficulty: medium
+    grader: openenv_email_triage.graders:grade_medium
   - id: hard-001
     difficulty: hard
+    grader: openenv_email_triage.graders:grade_hard
 interfaces:
   - reset
   - step

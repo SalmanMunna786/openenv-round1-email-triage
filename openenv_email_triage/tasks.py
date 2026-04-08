@@ -10,6 +10,7 @@ TASKS = [
         "expected_category": "billing",
         "expected_priority": "medium",
         "reply_keywords": ["refund", "charge", "investigate"],
+        "grader_id": "grader_easy",
     },
     {
         "task_id": "medium-001",
@@ -22,6 +23,7 @@ TASKS = [
         "expected_category": "account",
         "expected_priority": "high",
         "reply_keywords": ["verify", "2fa", "recovery", "urgent"],
+        "grader_id": "grader_medium",
     },
     {
         "task_id": "hard-001",
@@ -34,6 +36,7 @@ TASKS = [
         "expected_category": "technical",
         "expected_priority": "high",
         "reply_keywords": ["logs", "incident", "billing", "escalate"],
+        "grader_id": "grader_hard",
     },
 ]
 

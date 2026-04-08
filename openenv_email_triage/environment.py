@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Dict, Tuple
 
+from .graders import GRADERS, strict_score
 from .models import ActionType, AgentAction, Observation
 from .tasks import TASKS
 
@@ -32,7 +33,10 @@ class EmailTriageEnv:
         self.current: EpisodeState | None = None
 
     def reset(self, task_id: str | None = None) -> Observation:
-        task = self.tasks_by_id[task_id] if task_id else TASKS[0]
+        if task_id and task_id in self.tasks_by_id:
+            task = self.tasks_by_id[task_id]
+        else:
+            task = TASKS[0]
         self.current = EpisodeState(task=task)
         return self._observation()
 
@@ -52,7 +56,8 @@ class EmailTriageEnv:
 
     def step(self, action: AgentAction) -> Tuple[Observation, float, bool, Dict[str, Any]]:
         if self.current is None:
-            raise RuntimeError("Call reset() before step().")
+            # Defensive default for validators calling step() first.
+            self.reset()
 
         s = self.current
         s.step_count += 1
@@ -81,12 +86,17 @@ class EmailTriageEnv:
 
     def grade_current(self) -> float:
         if self.current is None:
-            return 0.0
-        score = 0.0
-        score += 0.4 if self.current.category_done else 0.0
-        score += 0.3 if self.current.priority_done else 0.0
-        score += 0.3 if self.current.reply_done else 0.0
-        return round(score, 4)
+            return 0.01
+        grader_id = self.current.task.get("grader_id", "")
+        grader = GRADERS.get(grader_id)
+        if grader is None:
+            # Safe fallback: still keep strict score bounds for validator.
+            score = 0.0
+            score += 0.4 if self.current.category_done else 0.0
+            score += 0.3 if self.current.priority_done else 0.0
+            score += 0.3 if self.current.reply_done else 0.0
+            return strict_score(score)
+        return grader(self.state())
 
     def _all_done(self) -> bool:
         assert self.current is not None
