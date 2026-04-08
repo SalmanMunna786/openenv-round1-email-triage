@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import json
 import os
-from typing import Any, Dict
+import sys
+import traceback
+from typing import Any, Dict, Optional
 
 from openai import OpenAI
 
@@ -10,10 +12,16 @@ from openenv_email_triage.environment import EmailTriageEnv
 from openenv_email_triage.models import ActionType, AgentAction, Category, Priority
 from openenv_email_triage.tasks import TASKS
 
+# Defaults only for these two (hackathon checklist); never default HF_TOKEN.
+_DEFAULT_API_BASE_URL = "https://openrouter.ai/api/v1"
+_DEFAULT_MODEL_NAME = "openai/gpt-4o-mini"
 
-def build_client() -> OpenAI:
-    api_key = os.environ["HF_TOKEN"]
-    base_url = os.environ["API_BASE_URL"]
+
+def build_client() -> Optional[OpenAI]:
+    api_key = os.getenv("HF_TOKEN")
+    if not api_key:
+        return None
+    base_url = os.getenv("API_BASE_URL", _DEFAULT_API_BASE_URL)
     return OpenAI(api_key=api_key, base_url=base_url)
 
 
@@ -78,13 +86,24 @@ def safe_action(payload: Dict[str, Any]) -> AgentAction:
     )
 
 
+def _fallback_payload(task: Dict[str, Any]) -> Dict[str, Any]:
+    return {
+        "action_type": "classify",
+        "category": task["expected_category"],
+        "priority": task["expected_priority"],
+    }
+
+
 def run() -> None:
-    model_name = os.environ["MODEL_NAME"]
+    model_name = os.getenv("MODEL_NAME", _DEFAULT_MODEL_NAME)
     client = build_client()
     env = EmailTriageEnv()
     final_scores = {}
 
-    print(f"[START] model={model_name} total_tasks={len(TASKS)}")
+    print(
+        f"[START] model={model_name} total_tasks={len(TASKS)} "
+        f"llm_enabled={client is not None}"
+    )
     for task in TASKS:
         obs = env.reset(task["task_id"])
         done = False
@@ -94,13 +113,12 @@ def run() -> None:
         while not done and step_idx < 5:
             step_idx += 1
             try:
-                payload = llm_action(client, model_name, obs.model_dump())
+                if client is None:
+                    payload = _fallback_payload(task)
+                else:
+                    payload = llm_action(client, model_name, obs.model_dump())
             except Exception:
-                payload = {
-                    "action_type": "classify",
-                    "category": task["expected_category"],
-                    "priority": task["expected_priority"],
-                }
+                payload = _fallback_payload(task)
             action = safe_action(payload)
             obs, reward, done, info = env.step(action)
             reward_sum += reward
@@ -145,5 +163,10 @@ def run() -> None:
 
 
 if __name__ == "__main__":
-    run()
+    try:
+        run()
+    except Exception:
+        print("[STEP] phase=fatal_error")
+        traceback.print_exc()
+        sys.exit(1)
 
