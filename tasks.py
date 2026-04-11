@@ -1,6 +1,6 @@
 """Root-level task exports for validator compatibility."""
 
-from grader import grade_easy, grade_hard, grade_medium
+from grader import GRADERS, grade_easy, grade_hard, grade_medium
 
 
 TASKS = [
@@ -13,7 +13,9 @@ TASKS = [
             "Classify a duplicate-charge support email and provide a refund-oriented reply."
         ),
         "grader": grade_easy,
+        "grader_id": "grader_easy",
         "grader_path": "grader.grade_easy",
+        "grader_name": "grade_easy",
     },
     {
         "id": "medium-001",
@@ -24,7 +26,9 @@ TASKS = [
             "Handle an urgent account lockout caused by missing 2FA codes."
         ),
         "grader": grade_medium,
+        "grader_id": "grader_medium",
         "grader_path": "grader.grade_medium",
+        "grader_name": "grade_medium",
     },
     {
         "id": "hard-001",
@@ -35,7 +39,9 @@ TASKS = [
             "Handle an API outage report that also mentions invoice discrepancies."
         ),
         "grader": grade_hard,
+        "grader_id": "grader_hard",
         "grader_path": "grader.grade_hard",
+        "grader_name": "grade_hard",
     },
 ]
 
@@ -45,4 +51,17 @@ def get_tasks():
     return TASKS
 
 
-__all__ = ["TASKS", "get_tasks"]
+tasks = TASKS
+TASK_REGISTRY = {task["id"]: task for task in TASKS}
+task_graders = {task["id"]: task["grader"] for task in TASKS}
+grader_registry = GRADERS
+
+
+__all__ = [
+    "TASKS",
+    "tasks",
+    "TASK_REGISTRY",
+    "task_graders",
+    "grader_registry",
+    "get_tasks",
+]

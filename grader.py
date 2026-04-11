@@ -96,4 +96,14 @@ def grade(state_or_env):
     return grade_easy(state_or_env)
 
 
-__all__ = ["grade_easy", "grade_medium", "grade_hard", "grade"]
+GRADERS = {
+    "easy-001": grade_easy,
+    "medium-001": grade_medium,
+    "hard-001": grade_hard,
+    "grader_easy": grade_easy,
+    "grader_medium": grade_medium,
+    "grader_hard": grade_hard,
+}
+
+
+__all__ = ["grade_easy", "grade_medium", "grade_hard", "grade", "GRADERS"]
