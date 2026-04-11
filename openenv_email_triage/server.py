@@ -15,6 +15,23 @@ class ResetRequest(BaseModel):
     task_id: str | None = None
 
 
+class GradeRequest(BaseModel):
+    task_id: str | None = None
+
+
+def _task_payload(task: dict) -> dict:
+    return {
+        "id": task["task_id"],
+        "task_id": task["task_id"],
+        "name": task["task_id"],
+        "difficulty": task["difficulty"],
+        "grader": task.get("grader_fn", f"grader.{task['grader_id'].replace('grader_', 'grade_')}"),
+        "grader_id": task["grader_id"],
+        "grader_path": task.get("grader_fn", f"grader.{task['grader_id'].replace('grader_', 'grade_')}"),
+        "enabled": True,
+    }
+
+
 @app.get("/")
 def root() -> dict:
     return {"message": "openenv-email-triage", "status": "ok"}
@@ -26,15 +43,9 @@ def health() -> dict:
 
 
 @app.get("/tasks")
-def tasks() -> list[dict]:
-    return [
-        {
-            "id": task["task_id"],
-            "difficulty": task["difficulty"],
-            "grader": task["grader_id"],
-        }
-        for task in TASKS
-    ]
+def tasks() -> dict:
+    task_items = [_task_payload(task) for task in TASKS]
+    return {"tasks": task_items, "count": len(task_items)}
 
 
 @app.post("/reset")
@@ -83,21 +94,30 @@ def _run_grader_for_task(task_id: str) -> dict:
     score = fresh_env.grade_current()
     return {
         "task_id": task["task_id"],
-        "grader": task["grader_id"],
+        "grader": task.get("grader_fn", f"grader.{task['grader_id'].replace('grader_', 'grade_')}"),
+        "grader_id": task["grader_id"],
         "score": score,
     }
 
 
 @app.get("/grader")
-def grader() -> dict:
-    current_state = env.state()
-    task_id = current_state.get("task_id")
-    if not task_id:
-        task_id = TASKS[0]["task_id"]
-    return _run_grader_for_task(task_id)
+def grader(task_id: str | None = None) -> dict:
+    if task_id:
+        return _run_grader_for_task(task_id)
+
+    return {
+        "tasks": [_run_grader_for_task(task["task_id"]) for task in TASKS],
+        "count": len(TASKS),
+    }
 
 
 @app.get("/grader/{task_id}")
 def grader_for_task(task_id: str) -> dict:
     return _run_grader_for_task(task_id)
 
+
+@app.post("/grader")
+def grader_post(payload: GradeRequest | None = Body(default=None)) -> dict:
+    if payload and payload.task_id:
+        return _run_grader_for_task(payload.task_id)
+    return grader()
