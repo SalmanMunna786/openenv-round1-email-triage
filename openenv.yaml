@@ -1,32 +1,15 @@
-# Meta OpenEnv manifest (spec_version 1). Older name-only manifests are ignored by validators.
 spec_version: 1
-name: openenv-email-triage
-type: space
-runtime: fastapi
+type: environment
+runtime: python
 app: server.app:app
 port: 7860
-description: >
-  Real-world customer-support email triage environment for the Meta PyTorch OpenEnv Hackathon.
-  Agents classify priority, route by category, and draft first responses with graded partial progress.
-
-action_model: openenv_email_triage.models:AgentAction
-observation_model: openenv_email_triage.models:Observation
-
-# Environment implementation (step/reset/state)
-entrypoint: openenv_email_triage.environment:EmailTriageEnv
-
+entrypoint: openenv_email_triage.environment.EmailTriageEnv
+action_model: openenv_email_triage.models.Action
+observation_model: openenv_email_triage.models.Observation
 tasks:
   - id: easy-001
-    difficulty: easy
-    grader: grader_easy
+    grader: openenv_email_triage.graders.grade_easy
   - id: medium-001
-    difficulty: medium
-    grader: grader_medium
+    grader: openenv_email_triage.graders.grade_medium
   - id: hard-001
-    difficulty: hard
-    grader: grader_hard
-
-interfaces:
-  - reset
-  - step
-  - state
+    grader: openenv_email_triage.graders.grade_hard
