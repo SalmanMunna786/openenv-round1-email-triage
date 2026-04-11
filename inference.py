@@ -160,9 +160,11 @@ def _run_task(env: EmailTriageEnv, task: Dict[str, Any], client: Optional[OpenAI
         )
 
     final_score = env.grade_current()
-    # Use 'score=' (not 'final_score=') — matches the expected validator log format.
+    grader_name = task.get("grader_id", "grade_task")
+    # Include grader= so the validator can associate each task with a grader function.
     print(
-        f"[END] task={task['task_id']} total_reward={reward_sum:.4f} score={final_score:.4f}"
+        f"[END] task={task['task_id']} grader={grader_name} "
+        f"total_reward={reward_sum:.4f} score={final_score:.4f}"
     )
     return final_score
 
