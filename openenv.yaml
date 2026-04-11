@@ -1,15 +1,10 @@
 spec_version: 1
-type: environment
-runtime: python
 app: server.app:app
 port: 7860
-entrypoint: openenv_email_triage.environment.EmailTriageEnv
-action_model: openenv_email_triage.models.Action
-observation_model: openenv_email_triage.models.Observation
 tasks:
   - id: easy-001
-    grader: openenv_email_triage.graders.grade_easy
+    grader: grader.grade_easy
   - id: medium-001
-    grader: openenv_email_triage.graders.grade_medium
+    grader: grader.grade_medium
   - id: hard-001
-    grader: openenv_email_triage.graders.grade_hard
+    grader: grader.grade_hard
