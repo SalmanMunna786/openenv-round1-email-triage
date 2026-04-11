@@ -26,9 +26,18 @@ def health() -> dict:
 
 
 @app.get("/tasks")
-def tasks() -> list[str]:
-    # Keep response simple for broad validator compatibility.
-    return [task["task_id"] for task in TASKS]
+def tasks() -> list[dict]:
+    # Expose grader metadata directly so validators can confirm task wiring.
+    return [
+        {
+            "id": task["task_id"],
+            "task_id": task["task_id"],
+            "difficulty": task["difficulty"],
+            "grader": task["grader_fn"],
+            "grader_id": task["grader_id"],
+        }
+        for task in TASKS
+    ]
 
 
 @app.post("/reset")
@@ -68,4 +77,3 @@ def grader() -> dict:
         "grader": grader_name,
         "score": env.grade_current(),
     }
-

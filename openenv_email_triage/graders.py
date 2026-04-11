@@ -6,29 +6,42 @@ def strict_score(x):
     return max(0.01, min(0.99, float(x)))
 
 
-def grade_easy(source):
-    """Grade easy task based on state."""
-    if hasattr(source, 'state'):
+def _extract_state(source):
+    """Support env objects, flat dicts, and dicts with nested status."""
+    if hasattr(source, "state"):
         state = source.state()
     else:
         state = source if isinstance(source, dict) else {}
-    
+
+    status = state.get("status", {}) if isinstance(state, dict) else {}
+    return {
+        "category_done": bool(
+            state.get("category_done", status.get("category_done", False))
+        ),
+        "priority_done": bool(
+            state.get("priority_done", status.get("priority_done", False))
+        ),
+        "reply_done": bool(state.get("reply_done", status.get("reply_done", False))),
+    }
+
+
+def grade_easy(source):
+    """Grade easy task based on state."""
+    state = _extract_state(source)
+
     score = 0.0
     if state.get('category_done', False):
         score += 0.5
     if state.get('reply_done', False):
         score += 0.5
-    
+
     return strict_score(score)
 
 
 def grade_medium(source):
     """Grade medium task based on state."""
-    if hasattr(source, 'state'):
-        state = source.state()
-    else:
-        state = source if isinstance(source, dict) else {}
-    
+    state = _extract_state(source)
+
     score = 0.0
     if state.get('category_done', False):
         score += 0.3
@@ -36,17 +49,14 @@ def grade_medium(source):
         score += 0.3
     if state.get('reply_done', False):
         score += 0.4
-    
+
     return strict_score(score)
 
 
 def grade_hard(source):
     """Grade hard task based on state."""
-    if hasattr(source, 'state'):
-        state = source.state()
-    else:
-        state = source if isinstance(source, dict) else {}
-    
+    state = _extract_state(source)
+
     score = 0.0
     if state.get('category_done', False):
         score += 0.2
@@ -54,7 +64,7 @@ def grade_hard(source):
         score += 0.3
     if state.get('reply_done', False):
         score += 0.5
-    
+
     return strict_score(score)
 
 
@@ -68,4 +78,3 @@ GRADERS = {
     "grader_medium": grade_medium,
     "grader_hard": grade_hard,
 }
-

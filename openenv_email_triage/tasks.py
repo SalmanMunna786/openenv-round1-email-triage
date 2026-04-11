@@ -1,6 +1,7 @@
 TASKS = [
     {
         "task_id": "easy-001",
+        "id": "easy-001",
         "difficulty": "easy",
         "email_text": (
             "Subject: Duplicate charge\n"
@@ -11,9 +12,11 @@ TASKS = [
         "expected_priority": "medium",
         "reply_keywords": ["refund", "charge", "investigate"],
         "grader_id": "grader_easy",
+        "grader_fn": "grader.grade_easy",
     },
     {
         "task_id": "medium-001",
+        "id": "medium-001",
         "difficulty": "medium",
         "email_text": (
             "Subject: Locked out of account\n"
@@ -24,9 +27,11 @@ TASKS = [
         "expected_priority": "high",
         "reply_keywords": ["verify", "2fa", "recovery", "urgent"],
         "grader_id": "grader_medium",
+        "grader_fn": "grader.grade_medium",
     },
     {
         "task_id": "hard-001",
+        "id": "hard-001",
         "difficulty": "hard",
         "email_text": (
             "Subject: API failures and invoice mismatch\n"
@@ -37,6 +42,6 @@ TASKS = [
         "expected_priority": "high",
         "reply_keywords": ["logs", "incident", "billing", "escalate"],
         "grader_id": "grader_hard",
+        "grader_fn": "grader.grade_hard",
     },
 ]
-

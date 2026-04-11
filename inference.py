@@ -6,7 +6,10 @@ import sys
 import traceback
 from typing import Any, Dict, Optional
 
-from openai import OpenAI
+try:
+    from openai import OpenAI
+except ImportError:  # pragma: no cover - fallback for minimal validator envs
+    OpenAI = None
 
 from openenv_email_triage.environment import EmailTriageEnv
 from openenv_email_triage.models import ActionType, AgentAction, Category, Priority
@@ -18,6 +21,8 @@ _DEFAULT_MODEL_NAME = "openai/gpt-4o-mini"
 
 
 def build_client() -> Optional[OpenAI]:
+    if OpenAI is None:
+        return None
     api_key = os.getenv("HF_TOKEN")
     if not api_key:
         return None
@@ -169,4 +174,3 @@ if __name__ == "__main__":
         print("[STEP] phase=fatal_error")
         traceback.print_exc()
         sys.exit(1)
-

@@ -6,6 +6,25 @@ def _clamp_score(score):
     return max(0.01, min(0.99, float(score)))
 
 
+def _extract_state(state_or_env):
+    """Support env objects, flat dicts, and dicts with nested status."""
+    if isinstance(state_or_env, dict):
+        state = state_or_env
+    else:
+        state = state_or_env.state() if hasattr(state_or_env, 'state') else {}
+
+    status = state.get("status", {}) if isinstance(state, dict) else {}
+    return {
+        "category_done": bool(
+            state.get("category_done", status.get("category_done", False))
+        ),
+        "priority_done": bool(
+            state.get("priority_done", status.get("priority_done", False))
+        ),
+        "reply_done": bool(state.get("reply_done", status.get("reply_done", False))),
+    }
+
+
 def grade_easy(state_or_env):
     """Grade the easy task.
     
@@ -15,12 +34,8 @@ def grade_easy(state_or_env):
     Returns:
         float: Score strictly between 0 and 1
     """
-    # Handle both state dict and env object
-    if isinstance(state_or_env, dict):
-        state = state_or_env
-    else:
-        state = state_or_env.state() if hasattr(state_or_env, 'state') else {}
-    
+    state = _extract_state(state_or_env)
+
     # Compute score based on state
     score = 0.0
     if state.get('category_done', False):
@@ -40,11 +55,8 @@ def grade_medium(state_or_env):
     Returns:
         float: Score strictly between 0 and 1
     """
-    if isinstance(state_or_env, dict):
-        state = state_or_env
-    else:
-        state = state_or_env.state() if hasattr(state_or_env, 'state') else {}
-    
+    state = _extract_state(state_or_env)
+
     score = 0.0
     if state.get('category_done', False):
         score += 0.3
@@ -65,11 +77,8 @@ def grade_hard(state_or_env):
     Returns:
         float: Score strictly between 0 and 1
     """
-    if isinstance(state_or_env, dict):
-        state = state_or_env
-    else:
-        state = state_or_env.state() if hasattr(state_or_env, 'state') else {}
-    
+    state = _extract_state(state_or_env)
+
     score = 0.0
     if state.get('category_done', False):
         score += 0.2
@@ -88,4 +97,3 @@ def grade(state_or_env):
 
 
 __all__ = ["grade_easy", "grade_medium", "grade_hard", "grade"]
-

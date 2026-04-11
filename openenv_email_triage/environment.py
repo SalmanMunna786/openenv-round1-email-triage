@@ -47,6 +47,9 @@ class EmailTriageEnv:
             "ready": True,
             "task_id": self.current.task["task_id"],
             "step_count": self.current.step_count,
+            "category_done": self.current.category_done,
+            "priority_done": self.current.priority_done,
+            "reply_done": self.current.reply_done,
             "status": {
                 "category_done": self.current.category_done,
                 "priority_done": self.current.priority_done,
@@ -146,4 +149,3 @@ class EmailTriageEnv:
             },
             history=self.current.history,
         )
-
